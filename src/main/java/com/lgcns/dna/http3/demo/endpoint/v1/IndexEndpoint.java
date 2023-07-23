@@ -1,16 +1,15 @@
 package com.lgcns.dna.http3.demo.endpoint.v1;
 
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-
-@Component
-@Path("")
+@RestController
+@RequestMapping("v1")
 public class IndexEndpoint {
 
-    @GET
+    @GetMapping("/")
     public String index() {
-        return "hello jersey project!";
+        return "hello jersey project!\n";
     }
 }
