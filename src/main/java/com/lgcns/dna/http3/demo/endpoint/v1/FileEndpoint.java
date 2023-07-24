@@ -104,5 +104,12 @@ public class FileEndpoint {
 //       outputChannel.write(buffer);
 //       buffer.clear();
 //     }
-//   }
+//   } 
 // }
+
+//  RandomAccessFile raf = new RandomAccessFile(path, "rw");
+//  try {
+//   raf.setLength(maxSize);
+//  } finally {
+//   raf.close();
+//  }
