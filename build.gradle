@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.1'
+	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
@@ -9,7 +9,11 @@ group = 'com.lgcns.dna.http3'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = "$javaVersion"
+}
+
+configurations.all {
+    exclude group: "org.eclipse.jetty", module: "jetty-slf4j-impl"
 }
 
 configurations {
@@ -26,18 +30,22 @@ ext {
 	set('snippetsDir', file("build/generated-snippets"))
 }
 
-ext["jakarta-servlet.version"] = "5.0.0"
+ext["jakarta-servlet.version"] = "$jakartaServletVersion"
 
 dependencies {
 	// implementation 'org.springframework.boot:spring-boot-starter-jersey'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation ('org.springframework.boot:spring-boot-starter-web') {
+		exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+	}
 	implementation ("org.springframework.boot:spring-boot-starter-jetty")
 	modules {
 		module("org.springframework.boot:spring-boot-starter-tomcat") {
 			replacedBy("org.springframework.boot:spring-boot-starter-jetty", "Use Jetty instead of Tomcat")
 		}
 	}
-	implementation 'org.eclipse.jetty:jetty-alpn-java-server'
+	// implementation ('org.eclipse.jetty.http2:http2-server')
+	implementation ('org.eclipse.jetty.http3:http3-server')
+	implementation ('org.eclipse.jetty:jetty-alpn-java-server')
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	compileOnly 'org.projectlombok:lombok'
