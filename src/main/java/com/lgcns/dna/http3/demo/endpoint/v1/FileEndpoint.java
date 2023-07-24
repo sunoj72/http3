@@ -107,6 +107,7 @@ public class FileEndpoint {
 //   } 
 // }
 
+// https://www.oracle.com/technical-resources/articles/javase/perftuning.html
 //  RandomAccessFile raf = new RandomAccessFile(path, "rw");
 //  try {
 //   raf.setLength(maxSize);
