@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Dataset ###
+/src/main/resources/static/sample-*.csv
