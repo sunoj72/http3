@@ -43,7 +43,7 @@ dependencies {
 			replacedBy("org.springframework.boot:spring-boot-starter-jetty", "Use Jetty instead of Tomcat")
 		}
 	}
-	// implementation ('org.eclipse.jetty.http2:http2-server')
+	implementation ('org.eclipse.jetty.http2:http2-server')
 	implementation ('org.eclipse.jetty.http3:http3-server')
 	implementation ('org.eclipse.jetty:jetty-alpn-java-server')
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'

@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class FileEndpoint {
         return fileContent.getBytes();
     }
 
-    @RequestMapping("/byteimage")
+    @PostMapping("/download-chunk")
     public ResponseEntity<ByteArrayResource> getByteImage() throws URISyntaxException, IOException {
         String imageFilePath = "static/image.png";
         URL url = getClass().getClassLoader().getResource(imageFilePath);
@@ -50,7 +51,7 @@ public class FileEndpoint {
                 .body(new ByteArrayResource(Files.readAllBytes(path)));
     }
 
-    @RequestMapping("/imagefile")
+    @PostMapping("/upload-chunk")
     public ResponseEntity<ByteArrayResource> getImageFile() throws URISyntaxException, IOException {
         String imageFilePath = "static/image.png";
         URL url = getClass().getClassLoader().getResource(imageFilePath);
@@ -70,7 +71,7 @@ public class FileEndpoint {
                 .body(new ByteArrayResource(Files.readAllBytes(path)));
     }
 
-    @RequestMapping("/imageresource")
+    @PostMapping("/imageresource")
     public ResponseEntity<Resource> getResource() throws URISyntaxException, IOException {
         String imageFilePath = "static/image.png";
         URL url = getClass().getClassLoader().getResource(imageFilePath);
