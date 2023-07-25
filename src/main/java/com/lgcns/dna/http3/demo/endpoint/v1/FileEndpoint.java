@@ -91,26 +91,3 @@ public class FileEndpoint {
     }
 
 }
-
-// https://www.baeldung.com/java-filechannel
-// private void copyUsingChannel() throws IOException {
-//   try (
-//       FileChannel inputChannel = new FileInputStream(source).getChannel();
-//       FileChannel outputChannel = new FileOutputStream(target).getChannel();
-//   ) {
-//     ByteBuffer buffer = ByteBuffer.allocateDirect(4 * 1024);
-//     while (inputChannel.read(buffer) != -1) {
-//       buffer.flip();
-//       outputChannel.write(buffer);
-//       buffer.clear();
-//     }
-//   } 
-// }
-
-// https://www.oracle.com/technical-resources/articles/javase/perftuning.html
-//  RandomAccessFile raf = new RandomAccessFile(path, "rw");
-//  try {
-//   raf.setLength(maxSize);
-//  } finally {
-//   raf.close();
-//  }
