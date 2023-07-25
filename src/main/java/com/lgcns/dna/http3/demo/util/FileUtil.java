@@ -40,7 +40,10 @@ public class FileUtil {
         try (FileChannel outputChannel = new FileOutputStream(fileName).getChannel()) {
             buffer.flip();
             outputChannel.position(offset);
-            outputChannel.write(buffer, size);
+
+            while(buffer.hasRemaining()) {
+                outputChannel.write(buffer, size);
+            }            
         } catch (Exception e) {
             e.printStackTrace();
         }
