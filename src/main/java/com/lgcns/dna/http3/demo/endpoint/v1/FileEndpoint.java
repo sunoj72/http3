@@ -1,5 +1,7 @@
 package com.lgcns.dna.http3.demo.endpoint.v1;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.lgcns.dna.http3.demo.service.SampleDatasets;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +27,9 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("files")
 public class FileEndpoint {
+
+    @Autowired
+    private SampleDatasets datasets;
 
     @GetMapping("/csv")
     public byte[] getCsvFile() throws URISyntaxException, IOException {
@@ -38,17 +45,11 @@ public class FileEndpoint {
 
     @PostMapping("/download-chunk")
     public ResponseEntity<ByteArrayResource> getByteImage() throws URISyntaxException, IOException {
-        String imageFilePath = "static/image.png";
-        URL url = getClass().getClassLoader().getResource(imageFilePath);
-        if (url == null) {
-            throw new IOException("File " + imageFilePath + " not found");
-        }
-        File file = new File(url.toURI());
-        Path path = Paths.get(url.toURI());
         return ResponseEntity.ok()
-                .contentLength(file.length())
+                .contentLength(datasets.smaple10.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new ByteArrayResource(Files.readAllBytes(path)));
+                .header("XX-CHUNK-CHECKSUM", datasets.smaple10Chechsum)
+                .body(new ByteArrayResource(datasets.smaple10));
     }
 
     @PostMapping("/upload-chunk")

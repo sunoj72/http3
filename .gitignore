@@ -37,5 +37,5 @@ out/
 .vscode/
 
 ### Application ###
-access.log
+access.log*
 /src/main/resources/static/sample-*.csv
