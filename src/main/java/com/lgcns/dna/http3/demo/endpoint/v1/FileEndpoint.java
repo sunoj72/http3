@@ -1,28 +1,28 @@
 package com.lgcns.dna.http3.demo.endpoint.v1;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lgcns.dna.http3.demo.service.SampleDatasets;
 
-import java.io.File;
-import java.io.FileInputStream;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 
 @RestController
 @RequestMapping("files")
@@ -44,52 +44,39 @@ public class FileEndpoint {
     }
 
     @PostMapping("/download-chunk")
-    public ResponseEntity<ByteArrayResource> getByteImage() throws URISyntaxException, IOException {
+    public ResponseEntity<ByteArrayResource> downloadChunk() throws URISyntaxException, IOException {
         return ResponseEntity.ok()
                 .contentLength(datasets.smaple10.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header("XX-CHUNK-CHECKSUM", datasets.smaple10Chechsum)
+                .header("X-DNA-CHUNK-CHECKSUM", datasets.smaple10Chechsum)
+                .header("X-DNA-CHUNK-SIZE", Integer.toString(datasets.smaple10.length))
                 .body(new ByteArrayResource(datasets.smaple10));
     }
 
-    @PostMapping("/upload-chunk")
-    public ResponseEntity<ByteArrayResource> getImageFile() throws URISyntaxException, IOException {
-        String imageFilePath = "static/image.png";
-        URL url = getClass().getClassLoader().getResource(imageFilePath);
-        if (url == null) {
-            throw new IOException("File " + imageFilePath + " not found");
+    @PostMapping(value = "/upload-chunk") // , consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE
+    @ResponseBody    
+    // public ResponseEntity<String> uploadChunk(HttpServletRequest request, @RequestBody InputStream chunkStream) throws IOException {
+    public ResponseEntity<String> uploadChunk(HttpServletRequest request) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        int chunkSize = Integer.parseInt(request.getHeader("X-DNA-CHUNK-SIZE"));
+
+        byte[] data = new byte[chunkSize]; // 버퍼 크기를 조정하세요.
+
+        ServletInputStream chunkStream = request.getInputStream();
+
+        while ((nRead = chunkStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
         }
-        File file = new File(url.toURI());
-        Path path = Paths.get(url.toURI());
+        
+        buffer.flush();
+        byte[] buff = buffer.toByteArray();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=customname.png");
+        NumberFormat formatter = NumberFormat.getNumberInstance();
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new ByteArrayResource(Files.readAllBytes(path)));
+        System.out.println("[Chunk Checksums] " + request.getHeader("X-DNA-CHUNK-CHECKSUM") + ", " + datasets.createChecksum(buff));
+        System.out.println("[Chunk Sizes] " + request.getHeader("X-DNA-CHUNK-SIZE") + ", " +  formatter.format(buff.length));
+
+        return ResponseEntity.ok("Chunk uploaded successfully!");
     }
-
-    @PostMapping("/imageresource")
-    public ResponseEntity<Resource> getResource() throws URISyntaxException, IOException {
-        String imageFilePath = "static/image.png";
-        URL url = getClass().getClassLoader().getResource(imageFilePath);
-        if (url == null) {
-            throw new IOException("File " + imageFilePath + " not found");
-        }
-        File file = new File(url.toURI());
-        Resource resource = new InputStreamResource(new FileInputStream(file));
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=customname.png");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }
-
 }
